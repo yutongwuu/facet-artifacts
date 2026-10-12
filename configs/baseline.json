@@ -1,0 +1,8 @@
+{
+  "sample_rate": 250.0,
+  "window_seconds": 1.0,
+  "hop_seconds": 0.25,
+  "low_hz": 1.0,
+  "high_hz": 45.0,
+  "notch_hz": 0.0
+}
