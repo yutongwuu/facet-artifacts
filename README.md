@@ -6,7 +6,7 @@
 
 Four-channel wearable EEG · Offline action detection · Compact temporal learning
 
-[Overview](#-overview) · [Pipeline](#-technical-route) · [Models](#-models) · [Scenarios](#-scenarios) · [Setup](#-setup-windows) · [Training](#-training--replay) · [Roadmap](#-roadmap)
+[Overview](#-overview) · [Demo](#-demo-frown-to-feedback) · [Pipeline](#-technical-route) · [Models](#-models) · [Scenarios](#-scenarios) · [Setup](#-setup-windows) · [Training](#-training--replay) · [Roadmap](#-roadmap)
 
 </div>
 
@@ -23,6 +23,32 @@ FACET explores whether signals conventionally treated as artifacts in EEG can pr
 - **Separate detection from source claims** — useful predictions do not, by themselves, establish pure EMG recovery or improved EEG cleaning.
 
 > **Status:** An offline feature-based baseline, synthetic-data generator and replay pipeline are implemented. Headband acquisition, real-recording performance and the DNN route remain to be validated. The diagram describes the intended working system, not reported experimental results.
+
+## 🎬 Demo: frown to feedback
+
+**A person frowns → FACET detects the action → an interaction event activates the UI → a connected robot provides feedback.**
+
+The intended demonstration connects eye-region action sensing to an interactive interface, with a robot as a possible feedback endpoint. A frown is treated as an observable movement mapped to an interaction event, not as evidence of an emotion or intent.
+
+<!-- DEMO GIF: replace the placeholder image below with assets/demo-frown-ui.gif when footage is ready. -->
+![Demo GIF placeholder: person frowns, UI activates, robot gives feedback](assets/demo-placeholder.svg)
+
+*Demo GIF reserved here. The future recording should identify whether predictions are live or replayed, and whether robot feedback is physical or simulated.*
+
+### Interaction process
+
+![FACET frown-to-UI-to-robot feedback process](assets/facet-interaction.svg)
+
+| Step | Role |
+| --- | --- |
+| Frown | The wearer performs the target eye-region action. |
+| Sense | The four-channel headband records mixed electrical activity. |
+| Detect | A trained compact model predicts the action from quality-controlled windows. |
+| Gate | An event layer checks signal quality, prediction stability and cooldown before emitting a trigger; uncertain windows emit no event. |
+| Activate | The accepted event updates or activates a UI element. |
+| Respond | An optional robot adapter maps the same event to a predefined feedback response; the UI can display acknowledgement. |
+
+The interaction layer and robot adapter are planned extensions of the offline pipeline. A classifier score alone does not directly trigger an interface or robot. Real-time event reliability and end-to-end latency must be measured separately from offline classification accuracy.
 
 ## 🔬 Technical route
 
@@ -62,6 +88,7 @@ The baseline uses RMS, mean absolute value, mean waveform length, zero-crossing 
 | Rewear / cross-day use | Repeat acquisition after repositioning the headband | Robustness to contact and placement changes |
 | Continuous monitoring | Detect events amid rest, jaw activity and head movement | Event-level misses and false alarms per minute |
 | Low-bandwidth interaction | Explore blink/eyebrow actions as intentional commands | Distinction from spontaneous actions and reliable rejection; future application |
+| UI + robot feedback | Map accepted frown events to UI activation and predefined robot responses | Event reliability, acknowledgement and end-to-end latency; planned demo |
 | Headset-integrated sensing | Explore electrode placement within a VR-style face interface | A new hardware validation study; future application |
 | EEG artifact research | Relate action-linked components to reference physiology | Source evidence and neural preservation, not merely smoother traces |
 
@@ -120,13 +147,15 @@ See [Framework details](docs/FRAMEWORK.md) for preprocessing, model serializatio
 - [ ] Train a compact 1D CNN and compare it with the feature baseline.
 - [ ] Evaluate rewear, cross-day and cross-participant generalization.
 - [ ] Add continuous event metrics, uncertainty calibration and rejection.
+- [ ] Add the frown-to-UI demo GIF, with live/replay status documented.
+- [ ] Implement gated action events and an optional robot feedback adapter.
 - [ ] Use reference EOG/EMG to investigate physiological sources.
 - [ ] Study selective artifact handling with explicit neural-preservation evaluation.
 
 ## 📁 Repository
 
 ```text
-assets/                     Research flow diagram
+assets/                     Research / interaction diagrams and demo media
 configs/baseline.json       Demonstration signal / window settings
 src/emoemg/                 Offline baseline and command-line interface
 scripts/                    Environment setup and checks
@@ -136,5 +165,3 @@ docs/WINDOWS_HANDOFF.md     Research context and cross-computer handoff
 ```
 
 The Python package remains `emoemg`; the project display name is **FACET**. Raw participant recordings, videos, models and experiment outputs are excluded from Git by default. Research context is summarized in [Windows handoff](docs/WINDOWS_HANDOFF.md); chat history does not automatically sync through Git.
-
-README organization is inspired by [EgoEMG](https://github.com/zhenqis123/EgoEMG). FACET is a separate project with different sensing hardware, target actions and research questions.
